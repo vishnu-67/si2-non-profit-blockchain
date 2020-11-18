@@ -33,6 +33,13 @@ CaEndpoint=$(aws managedblockchain get-member --region $REGION --network-id $NET
 nodeID=$(aws managedblockchain list-nodes --region $REGION --network-id $NETWORKID --member-id $MEMBERID --query 'Nodes[?Status==`AVAILABLE`] | [0].Id' --output text)
 peerEndpoint=$(aws managedblockchain get-node --region $REGION --network-id $NETWORKID --member-id $MEMBERID --node-id $nodeID --query 'Node.FrameworkAttributes.Fabric.PeerEndpoint' --output text)
 peerEventEndpoint=$(aws managedblockchain get-node --region $REGION --network-id $NETWORKID --member-id $MEMBERID --node-id $nodeID --query 'Node.FrameworkAttributes.Fabric.PeerEventEndpoint' --output text)
+
+nodeID2=$(aws managedblockchain list-nodes --region $REGION --network-id $NETWORKID --member-id $MEMBERID --query 'Nodes[?Status==`AVAILABLE`] | [1].Id' --output text)
+peerEndpoint2=$(aws managedblockchain get-node --region $REGION --network-id $NETWORKID --member-id $MEMBERID --node-id $nodeID2 --query 'Node.FrameworkAttributes.Fabric.PeerEndpoint' --output text)
+peerEventEndpoint2=$(aws managedblockchain get-node --region $REGION --network-id $NETWORKID --member-id $MEMBERID --node-id $nodeID2 --query 'Node.FrameworkAttributes.Fabric.PeerEventEndpoint' --output text)
+
+
+
 export ORDERINGSERVICEENDPOINT=$OrderingServiceEndpoint
 export ORDERINGSERVICEENDPOINTNOPORT=${ORDERINGSERVICEENDPOINT::-6}
 export VPCENDPOINTSERVICENAME=$VpcEndpointServiceName
@@ -41,6 +48,11 @@ export PEERNODEID=$nodeID
 export PEERSERVICEENDPOINT=$peerEndpoint
 export PEERSERVICEENDPOINTNOPORT=${PEERSERVICEENDPOINT::-6}
 export PEEREVENTENDPOINT=$peerEventEndpoint
+
+export PEERNODEID2=$nodeID2
+export PEERSERVICEENDPOINT2=$peerEndpoint2
+export PEERSERVICEENDPOINTNOPORT2=${PEERSERVICEENDPOINT2::-6}
+export PEEREVENTENDPOINT2=$peerEventEndpoint2
 
 echo Useful information stored in EXPORT variables
 echo REGION: $REGION
@@ -60,12 +72,18 @@ echo PEERSERVICEENDPOINT: $PEERSERVICEENDPOINT
 echo PEERSERVICEENDPOINTNOPORT: $PEERSERVICEENDPOINTNOPORT
 echo PEEREVENTENDPOINT: $PEEREVENTENDPOINT
 
+echo PEERNODEID2: $PEERNODEID
+echo PEERSERVICEENDPOINT2: $PEERSERVICEENDPOINT
+echo PEERSERVICEENDPOINTNOPORT2: $PEERSERVICEENDPOINTNOPORT
+echo PEEREVENTENDPOINT2: $PEEREVENTENDPOINT
+
 # Exports to be exported before executing any Fabric 'peer' commands via the CLI
 cat << EOF > peer-exports.sh
 export MSP_PATH=/opt/home/admin-msp
 export MSP=$MEMBERID
 export ORDERER=$ORDERINGSERVICEENDPOINT
 export PEER=$PEERSERVICEENDPOINT
+export PEER2=$PEERSERVICEENDPOINT2
 export CHANNEL=mychannel
 export CAFILE=/opt/home/managedblockchain-tls-chain.pem
 export CHAINCODENAME=mycc
